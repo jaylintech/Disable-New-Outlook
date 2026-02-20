@@ -1,15 +1,24 @@
 @echo off
-REM Set registry values for Outlook and Windows Update
+setlocal enableextensions
+net session >nul 2>&1 || (echo ERROR: Run as Administrator & pause & exit /b 1)
 
-REM ----- CURRENT USER KEYS -----
-REG ADD "HKCU\Software\Microsoft\Office\16.0\Outlook\Options\General" /v HideNewOutlookToggle /t REG_DWORD /d 1 /f
-REG ADD "HKCU\Software\Microsoft\Office\16.0\Outlook\Options\General" /v DoNewOutlookAutoMigration /t REG_DWORD /d 0 /f
-REG ADD "HKCU\Software\Microsoft\Office\16.0\Outlook\Options\General" /v NewOutlookAutoMigrationRetryIntervals /t REG_DWORD /d 0 /f
+echo Applying Outlook registry settings...
 
-REG ADD "HKCU\Software\Policies\Microsoft\Office\16.0\Outlook\Options\General" /v HideNewOutlookToggle /t REG_DWORD /d 1 /f
+set "BASE=HKCU\Software\Microsoft\Office\16.0\Outlook"
+set "REG=REG ADD"
+set "DWORD=/t REG_DWORD /f"
 
-REG ADD "HKCU\Software\Microsoft\Office\16.0\Outlook\Preferences" /v UseNewOutlook /t REG_DWORD /d 0 /f
+%REG% "%BASE%\Options\General" /v HideNewOutlookToggle          %DWORD% /d 1
+%REG% "%BASE%\Options\General" /v DoNewOutlookAutoMigration      %DWORD% /d 0
+%REG% "%BASE%\Options\General" /v NewOutlookAutoMigrationRetryIntervals %DWORD% /d 0
+%REG% "%BASE%\Preferences"     /v UseNewOutlook                  %DWORD% /d 0
 
-echo.
-echo Registry settings applied.
-pause
+set "POL=HKCU\Software\Policies\Microsoft\Office\16.0\Outlook"
+%REG% "%POL%\Options\General"  /v HideNewOutlookToggle           %DWORD% /d 1
+
+if %errorlevel% equ 0 (
+    echo All settings applied successfully.
+) else (
+    echo WARNING: One or more settings may have failed.
+    pause
+)
