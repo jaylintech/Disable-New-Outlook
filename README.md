@@ -1,2 +1,2 @@
 # Disable-New-Outlook
-Run .bat as administrator
+Run the batch file as administrator
